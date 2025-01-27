@@ -3,49 +3,35 @@ package odonto.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import odonto.model.Paciente;
-import odonto.repository.PacienteRepository;
+import odonto.services.PacienteService;
 
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
 
     @Autowired
-    private PacienteRepository pacienteRepository;
+    private PacienteService pacienteService;
 
     @PostMapping
     public Paciente cadastrarPaciente(@RequestBody Paciente paciente) {
-        return pacienteRepository.save(paciente);
+        return pacienteService.cadastrarPaciente(paciente);
     }
 
     @GetMapping
     public List<Paciente> listarPacientes() {
-        return pacienteRepository.findAll();
+        return pacienteService.listarPacientes();
     }
 
     @PutMapping("/{id}")
-    //verificar como diminuir essa bosta
     public Paciente editarPaciente(@PathVariable Long id, @RequestBody Paciente paciente) {
-        Paciente pacienteExistente = pacienteRepository.findById(id).orElseThrow();
-        pacienteExistente.setNome(paciente.getNome());
-        pacienteExistente.setCpf(paciente.getCpf());
-        pacienteExistente.setTelefone(paciente.getTelefone());
-        pacienteExistente.setEndereco(paciente.getEndereco());
-        pacienteExistente.setHistoricoMedico(paciente.getHistoricoMedico());
-        return pacienteRepository.save(pacienteExistente);
+        return pacienteService.editarPaciente(id, paciente);
     }
 
     @DeleteMapping("/{id}")
     public void excluirPaciente(@PathVariable Long id) {
-        pacienteRepository.deleteById(id);
+        pacienteService.excluirPaciente(id);
     }
 }

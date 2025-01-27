@@ -27,8 +27,6 @@ public class Dentista {
 
     @Embedded
     private DadosEndereco endereco;
-
-    // Construtor que converte DadosCadastroDentista em Dentista
     public Dentista(DadosCadastroDentista dados) {
         this.nome = dados.nome();
         this.cro = dados.cro();

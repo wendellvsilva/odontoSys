@@ -1,24 +1,20 @@
 package odonto.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import odonto.model.Pagamento;
-import odonto.repository.PagamentoRepository;
+import odonto.services.PagamentoService;
 
 @RestController
 @RequestMapping("/pagamentos")
 public class PagamentoController {
 
     @Autowired
-    private PagamentoRepository pagamentoRepository;
+    private PagamentoService pagamentoService;
 
     @PostMapping
     public Pagamento registrarPagamento(@RequestBody Pagamento pagamento) {
-        return pagamentoRepository.save(pagamento);
+        return pagamentoService.registrarPagamento(pagamento);
     }
 }
-

@@ -23,5 +23,6 @@ public class Pagamento {
     private BigDecimal valor;
     private LocalDate dataPagamento;
     private Boolean pago; 
+    private String status; 
 
 }
