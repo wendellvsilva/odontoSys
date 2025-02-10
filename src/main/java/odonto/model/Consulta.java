@@ -2,6 +2,7 @@ package odonto.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,5 +27,20 @@ public class Consulta {
 
     private LocalDateTime dataHora;
 
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public Dentista getDentista() {
+        return dentista;
+    }
+
+    public void setDentista(Dentista dentista) {
+        this.dentista = dentista;
+    }
 }
  

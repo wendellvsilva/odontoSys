@@ -41,4 +41,8 @@ public class Dentista {
             dados.endereco().numero()
         );
     }
+
+    public Long getId() {
+        return id;
+    }
 }
