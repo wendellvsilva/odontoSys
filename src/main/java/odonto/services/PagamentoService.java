@@ -27,25 +27,32 @@ public class PagamentoService {
         if (!pacienteRepository.existsById(pagamento.getPacienteId())) {
             throw new RuntimeException("Paciente não encontrado com ID: " + pagamento.getPacienteId());
         }
+
+        if (pagamento.getDentistaId() == null) {
+            throw new RuntimeException("Dentista não encontrado com ID: " + pagamento.getDentistaId());
+        }
+
+        pagamento.setStatus("PAGO");
+        pagamento.setDataPagamento(LocalDate.now());
         return pagamentoRepository.save(pagamento);
     }
 
     public Pagamento registrarPendencia(Pagamento pagamento) {
         pagamento.setStatus("PENDENTE");
+        pagamento.setPago(false);
         return pagamentoRepository.save(pagamento);
     }
 
     public Pagamento quitarPendencia(Long id) {
-    Pagamento pagamento = pagamentoRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Pagamento não encontrado com ID: " + id));
-    pagamento.setStatus("QUITADO");
-    pagamento.setDataPagamento(LocalDate.now());
-    return pagamentoRepository.save(pagamento);
-
+        Pagamento pagamento = pagamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado com ID: " + id));
+        pagamento.setStatus("QUITADO");
+        pagamento.setPago(true);
+        pagamento.setDataPagamento(LocalDate.now());
+        return pagamentoRepository.save(pagamento);
     }
+
     public List<Pagamento> listarPagamentosPorPaciente(Long pacienteId) {
         return pagamentoRepository.findByPacienteId(pacienteId);
     }
-
-
 }

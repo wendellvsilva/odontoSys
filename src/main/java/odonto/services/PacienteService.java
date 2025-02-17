@@ -24,11 +24,23 @@ public class PacienteService {
     public Paciente editarPaciente(Long id, Paciente paciente) {
         Paciente pacienteExistente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
-        pacienteExistente.setNome(paciente.getNome());
-        pacienteExistente.setCpf(paciente.getCpf());
-        pacienteExistente.setTelefone(paciente.getTelefone());
-        pacienteExistente.setEndereco(paciente.getEndereco());
-        pacienteExistente.setHistoricoMedico(paciente.getHistoricoMedico());
+
+        if (paciente.getNome() != null) {
+            pacienteExistente.setNome(paciente.getNome());
+        }
+        if (paciente.getCpf() != null) {
+            pacienteExistente.setCpf(paciente.getCpf());
+        }
+        if (paciente.getTelefone() != null) {
+            pacienteExistente.setTelefone(paciente.getTelefone());
+        }
+        if (paciente.getEndereco() != null) {
+            pacienteExistente.setEndereco(paciente.getEndereco());
+        }
+        if (paciente.getHistoricoMedico() != null) {
+            pacienteExistente.setHistoricoMedico(paciente.getHistoricoMedico());
+        }
+
         return pacienteRepository.save(pacienteExistente);
     }
 

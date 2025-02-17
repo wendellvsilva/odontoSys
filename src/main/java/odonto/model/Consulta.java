@@ -42,5 +42,12 @@ public class Consulta {
     public void setDentista(Dentista dentista) {
         this.dentista = dentista;
     }
+
+    public void setId(long l) {
+    }
+
+    public long getId() {
+        return 0;
+    }
 }
  
