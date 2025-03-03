@@ -27,27 +27,5 @@ public class Consulta {
 
     private LocalDateTime dataHora;
 
-    public LocalDateTime getDataHora() {
-        return dataHora;
-    }
-
-    public void setDataHora(LocalDateTime dataHora) {
-        this.dataHora = dataHora;
-    }
-
-    public Dentista getDentista() {
-        return dentista;
-    }
-
-    public void setDentista(Dentista dentista) {
-        this.dentista = dentista;
-    }
-
-    public void setId(long l) {
-    }
-
-    public long getId() {
-        return 0;
-    }
 }
  
