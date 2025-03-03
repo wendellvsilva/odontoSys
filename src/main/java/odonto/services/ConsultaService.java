@@ -1,10 +1,13 @@
 package odonto.services;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import odonto.model.Consulta;
 import odonto.repository.ConsultaRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 public class ConsultaService {
@@ -23,10 +26,28 @@ public class ConsultaService {
         return consultaRepository.save(consultaExistente);
     }
 
+
+
     public void cancelarConsulta(Long id) {
         if (!consultaRepository.existsById(id)) {
             throw new RuntimeException("Consulta não encontrada com ID: " + id);
         }
         consultaRepository.deleteById(id);
     }
+
+    private void validarDisponibilidade(Consulta consulta) {
+        LocalDateTime inicioConsulta = consulta.getDataHora();
+        LocalDateTime fimConsulta = inicioConsulta.plusHours(1); // Define a duração mínima
+
+        boolean existeConflito = consultaRepository.existsByDentistaIdAndDataHoraBetween(
+                (Long) consulta.getDentista().getId(),
+                inicioConsulta,
+                fimConsulta
+        );
+
+        if (existeConflito) {
+            throw new RuntimeException("Horário indisponível. Já existe uma consulta agendada para esse período.");
+        }
+    }
+
 }
