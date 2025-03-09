@@ -20,6 +20,12 @@ public class UsuarioController {
         return usuarioService.cadastrarUsuario(usuario);
     }
 
+    @PostMapping("/login")
+    public boolean login(@RequestParam String email, @RequestParam String senha) {
+        return usuarioService.validarLogin(email, senha);
+    }
+
+
     @GetMapping("/{id}")
     public Usuario obterUsuarioPorId(@PathVariable Long id) {
         return usuarioService.obterUsuario(id);

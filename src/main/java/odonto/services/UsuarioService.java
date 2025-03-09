@@ -7,6 +7,7 @@ import odonto.model.Usuario;
 import odonto.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -21,6 +22,18 @@ public class UsuarioService {
     public Usuario obterUsuario(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+    }
+
+    public boolean validarLogin(String email, String senha) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            if (usuario.getSenha().equals(senha)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Usuario> listarUsuarios() {
