@@ -25,6 +25,17 @@ public class PacienteController {
         return pacienteService.listarPacientes();
     }
 
+    @GetMapping("/{cpf}")
+    public List<Paciente> listarPacientesPorCpf(@PathVariable String cpf) {
+        return pacienteService.listarPacientesPorCpf(cpf);
+    }
+
+    @GetMapping("/{nome}")
+    public List<Paciente> listarPacientesPorNome(@PathVariable String nome) {
+        return pacienteService.listarPacientesPorNome(nome);
+    }
+
+
     @PutMapping("/{id}")
     public Paciente editarPaciente(@PathVariable Long id, @RequestBody Paciente paciente) {
         return pacienteService.editarPaciente(id, paciente);
