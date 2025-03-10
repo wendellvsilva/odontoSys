@@ -21,6 +21,15 @@ public class PacienteService {
         return pacienteRepository.findAll();
     }
 
+    public List<Paciente> listarPacientesPorCpf(String cpf) {
+        return pacienteRepository.findByCpf(cpf);
+    }
+
+    public List<Paciente> listarPacientesPorNome(String nome) {
+        return pacienteRepository.findByCpf(nome);
+    }
+
+
     public Paciente editarPaciente(Long id, Paciente paciente) {
         Paciente pacienteExistente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
