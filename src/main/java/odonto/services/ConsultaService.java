@@ -8,6 +8,7 @@ import odonto.model.Consulta;
 import odonto.repository.ConsultaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ConsultaService {
@@ -26,7 +27,9 @@ public class ConsultaService {
         return consultaRepository.save(consultaExistente);
     }
 
-
+    public List<Consulta> listarConsultas() {
+        return consultaRepository.findAll();
+    }
 
     public void cancelarConsulta(Long id) {
         if (!consultaRepository.existsById(id)) {
