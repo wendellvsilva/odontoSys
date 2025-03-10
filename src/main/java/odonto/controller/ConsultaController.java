@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import odonto.model.Consulta;
 import odonto.services.ConsultaService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/consultas")
 public class ConsultaController {
@@ -26,5 +28,10 @@ public class ConsultaController {
     @DeleteMapping("/{id}")
     public void cancelarConsulta(@PathVariable Long id) {
         consultaService.cancelarConsulta(id);
+    }
+
+    @GetMapping
+    public List<Consulta> listarConsultas() {
+        return consultaService.listarConsultas();
     }
 }
