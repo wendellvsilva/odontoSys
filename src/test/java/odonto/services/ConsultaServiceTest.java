@@ -1,91 +1,134 @@
 package odonto.services;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.*;
 
 import odonto.model.Consulta;
+import odonto.model.Dentista;
+import odonto.model.Especialidade;
 import odonto.repository.ConsultaRepository;
+import odonto.dto.DadosCadastroDentista;
+import odonto.dto.DadosEndereco;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-class ConsultaServiceTest {
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 
-    @InjectMocks
-    private ConsultaService consultaService;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+public class ConsultaServiceTest {
 
     @Mock
     private ConsultaRepository consultaRepository;
 
+    @InjectMocks
+    private ConsultaService consultaService;
+
+    private Consulta consulta;
+    private Dentista dentista;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
+        assertNotNull(consultaService, "ConsultaService não foi injetado!");
         MockitoAnnotations.openMocks(this);
+
+        DadosEndereco endereco = new DadosEndereco("Rua X", "Bairro Y", "12345-678", "Cidade Z", "UF", "Complemento", "123");
+        DadosCadastroDentista dadosCadastroDentista = new DadosCadastroDentista("Dentista Teste", "12345", Especialidade.ORTODONTISTA, endereco);
+
+        dentista = new Dentista(dadosCadastroDentista);
+
+        consulta = new Consulta();
+        consulta.setId(1L);
+        consulta.setDataHora(LocalDateTime.now().plusDays(1));
+        consulta.setDentista(dentista);
     }
 
     @Test
-    void testAgendarConsulta() {
-        Consulta consulta = new Consulta();
-        consulta.setId(1L);
-        consulta.setDataHora(LocalDateTime.now());
+    public void testAgendarConsulta() {
+        when(consultaRepository.save(any(Consulta.class))).thenReturn(consulta);
 
-        when(consultaRepository.save(consulta)).thenReturn(consulta);
-        Consulta consultaAgendada = consultaService.agendarConsulta(consulta);
-        assertNotNull(consultaAgendada);
-        assertEquals(1L, consultaAgendada.getId());
+        Consulta resultado = consultaService.agendarConsulta(consulta);
+
+        assertNotNull(resultado);
+        assertEquals(consulta.getId(), resultado.getId());
         verify(consultaRepository, times(1)).save(consulta);
     }
 
     @Test
-    void testReagendarConsulta() {
-        Long consultaId = 1L;
-        LocalDateTime novaDataHora = LocalDateTime.now().plusDays(1);
+    public void testReagendarConsulta_Sucesso() {
+        when(consultaRepository.findById(1L)).thenReturn(Optional.of(consulta));
+        when(consultaRepository.save(any(Consulta.class))).thenReturn(consulta);
 
-        Consulta consultaExistente = new Consulta();
-        consultaExistente.setId(consultaId);
-        consultaExistente.setDataHora(LocalDateTime.now());
+        consulta.setDataHora(LocalDateTime.now().plusDays(2));
 
-        when(consultaRepository.findById(consultaId)).thenReturn(Optional.of(consultaExistente));
-        when(consultaRepository.save(any(Consulta.class))).thenReturn(consultaExistente);
+        Consulta resultado = consultaService.reagendarConsulta(1L, consulta);
 
-        Consulta novaConsulta = new Consulta();
-        novaConsulta.setDataHora(novaDataHora);
-
-        Consulta consultaReagendada = consultaService.reagendarConsulta(consultaId, novaConsulta);
-        assertNotNull(consultaReagendada);
-        assertEquals(novaDataHora, consultaReagendada.getDataHora());
-        verify(consultaRepository, times(1)).findById(consultaId);
-        verify(consultaRepository, times(1)).save(consultaExistente);
+        assertNotNull(resultado);
+        assertEquals(consulta.getDataHora(), resultado.getDataHora());
+        verify(consultaRepository, times(1)).findById(1L);
+        verify(consultaRepository, times(1)).save(consulta);
     }
 
     @Test
-    void testCancelarConsulta() {
-    
-        Long consultaId = 1L;
+    public void testReagendarConsulta_ConsultaNaoEncontrada() {
+        when(consultaRepository.findById(1L)).thenReturn(Optional.empty());
 
-        when(consultaRepository.existsById(consultaId)).thenReturn(true);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            consultaService.reagendarConsulta(1L, consulta);
+        });
 
-        consultaService.cancelarConsulta(consultaId);
-
-        verify(consultaRepository, times(1)).existsById(consultaId);
-        verify(consultaRepository, times(1)).deleteById(consultaId);
+        assertEquals("Consulta não encontrada com ID: 1", exception.getMessage());
+        verify(consultaRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testCancelarConsultaInexistente() {
-        Long consultaId = 8899L;
+    public void testListarConsultas() {
+        when(consultaRepository.findAll()).thenReturn(Arrays.asList(consulta));
 
-        when(consultaRepository.existsById(consultaId)).thenReturn(false);
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> consultaService.cancelarConsulta(consultaId));
+        var resultado = consultaService.listarConsultas();
 
-        assertEquals("Consulta não encontrada com ID: " + consultaId, exception.getMessage());
-        verify(consultaRepository, times(1)).existsById(consultaId);
-        verify(consultaRepository, never()).deleteById(anyLong());
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+        verify(consultaRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testCancelarConsulta_Sucesso() {
+        when(consultaRepository.existsById(1L)).thenReturn(true);
+
+        consultaService.cancelarConsulta(1L);
+
+        verify(consultaRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testCancelarConsulta_ConsultaNaoEncontrada() {
+        when(consultaRepository.existsById(1L)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            consultaService.cancelarConsulta(1L);
+        });
+
+        assertEquals("Consulta não encontrada com ID: 1", exception.getMessage());
+        verify(consultaRepository, times(0)).deleteById(1L);
+    }
+
+
+
+    @Test
+    public void testValidarDisponibilidade_SemConflito() {
+        when(consultaRepository.existsByDentistaIdAndDataHoraBetween(
+                anyLong(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        assertDoesNotThrow(() -> consultaService.validarDisponibilidade(consulta));
     }
 }

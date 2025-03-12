@@ -30,10 +30,18 @@ public class PacienteService {
     }
 
 
-    public Paciente editarPaciente(Long id, Paciente paciente) {
-        Paciente pacienteExistente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com ID: " + id));
-
+    public Paciente editarPaciente(String cpf, Paciente paciente) {
+        // Buscar a lista de pacientes com o CPF fornecido
+        List<Paciente> pacientesExistentes = pacienteRepository.findByCpf(cpf);
+    
+        if (pacientesExistentes.isEmpty()) {
+            throw new RuntimeException("Paciente não encontrado com CPF: " + cpf);
+        }
+    
+        // Se houver mais de um paciente com o mesmo CPF, isso pode ser tratado conforme necessário
+        Paciente pacienteExistente = pacientesExistentes.get(0); // Pegando o primeiro paciente encontrado
+    
+        // Atualiza os dados do paciente se o campo não for nulo
         if (paciente.getNome() != null) {
             pacienteExistente.setNome(paciente.getNome());
         }
@@ -49,10 +57,11 @@ public class PacienteService {
         if (paciente.getHistoricoMedico() != null) {
             pacienteExistente.setHistoricoMedico(paciente.getHistoricoMedico());
         }
-
+    
+        // Salva o paciente atualizado
         return pacienteRepository.save(pacienteExistente);
     }
-
+    
     public void excluirPaciente(Long id) {
         if (!pacienteRepository.existsById(id)) {
             throw new RuntimeException("Paciente não encontrado com ID: " + id);

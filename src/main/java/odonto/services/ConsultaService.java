@@ -38,7 +38,7 @@ public class ConsultaService {
         consultaRepository.deleteById(id);
     }
 
-    private void validarDisponibilidade(Consulta consulta) {
+    void validarDisponibilidade(Consulta consulta) {
         LocalDateTime inicioConsulta = consulta.getDataHora();
         LocalDateTime fimConsulta = inicioConsulta.plusHours(1); // Define a duração mínima
 

@@ -25,10 +25,11 @@ public class PacienteController {
         return pacienteService.listarPacientes();
     }
 
-    @GetMapping("/{cpf}")
-    public List<Paciente> listarPacientesPorCpf(@PathVariable String cpf) {
+    @GetMapping("/buscar")
+    public List<Paciente> listarPacientesPorCpf(@RequestParam String cpf) {
         return pacienteService.listarPacientesPorCpf(cpf);
     }
+
 
     @GetMapping("/{nome}")
     public List<Paciente> listarPacientesPorNome(@PathVariable String nome) {
@@ -36,10 +37,11 @@ public class PacienteController {
     }
 
 
-    @PutMapping("/{id}")
-    public Paciente editarPaciente(@PathVariable Long id, @RequestBody Paciente paciente) {
-        return pacienteService.editarPaciente(id, paciente);
+    @PutMapping("/{cpf}")
+    public Paciente editarPaciente(@PathVariable String cpf, @RequestBody Paciente paciente) {
+        return pacienteService.editarPaciente(cpf, paciente);
     }
+    
 
     @DeleteMapping("/{id}")
     public void excluirPaciente(@PathVariable Long id) {
